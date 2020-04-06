@@ -1,7 +1,9 @@
 package oriol.test.coroutines.ui.main.modules
 
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import oriol.test.coroutines.ui.main.api.RetrofitService
 import oriol.test.coroutines.ui.main.repositories.MainRepository
@@ -14,8 +16,8 @@ object MainModule {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    fun getOkHttpClient() = OkHttpClient.Builder().apply {
-        addInterceptor { chain ->
+    fun getHeadersInterceptor() = object : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
             val original: Request = chain.request()
 
             val request: Request = original.newBuilder()
@@ -23,8 +25,13 @@ object MainModule {
                 .header("x-rapidapi-key", "c2d0cec82fmsh7b0238405c06f23p1d7a56jsnabdd9b2e79a4")
                 .build()
 
-            chain.proceed(request)
+            return chain.proceed(request)
         }
+
+    }
+
+    fun getOkHttpClient() = OkHttpClient.Builder().apply {
+        addInterceptor(getHeadersInterceptor())
         addInterceptor(getLoggingInterceptor())
     }
 
