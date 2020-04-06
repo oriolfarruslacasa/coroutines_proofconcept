@@ -1,7 +1,6 @@
 package oriol.test.coroutines.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import oriol.test.coroutines.R
 
 class MainFragment : Fragment() {
 
-    lateinit var message : TextView
+    lateinit var message: TextView
 
     companion object {
         fun newInstance() = MainFragment()
@@ -33,7 +32,8 @@ class MainFragment : Fragment() {
 
         message = view!!.findViewById(R.id.message)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        showData()
+//        showData()
+        showData2()
     }
 
     private fun showData() {
@@ -41,7 +41,20 @@ class MainFragment : Fragment() {
             var messageText = ""
 
             it.forEach {
-                messageText+= it.name + "\b"
+                messageText += it.name + "\b"
+            }
+
+            message.text = messageText
+        })
+    }
+
+    private fun showData2() {
+        viewModel.getVariousItems()
+        viewModel.data2.observe(viewLifecycleOwner, Observer {
+            var messageText = ""
+
+            it.forEach {
+                messageText += it.name + "\b"
             }
 
             message.text = messageText
