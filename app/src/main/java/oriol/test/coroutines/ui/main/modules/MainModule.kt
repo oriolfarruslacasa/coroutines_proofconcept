@@ -2,11 +2,17 @@ package oriol.test.coroutines.ui.main.modules
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
 import oriol.test.coroutines.ui.main.api.RetrofitService
+import oriol.test.coroutines.ui.main.repositories.MainRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object MainModule {
+
+    fun getLoggingInterceptor() = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
 
     fun getOkHttpClient() = OkHttpClient.Builder().apply {
         addInterceptor { chain ->
@@ -19,6 +25,7 @@ object MainModule {
 
             chain.proceed(request)
         }
+        addInterceptor(getLoggingInterceptor())
     }
 
     var client: OkHttpClient = getOkHttpClient().build()
@@ -30,4 +37,6 @@ object MainModule {
         .build()
 
     fun getService() = getRetrofit().create(RetrofitService::class.java)
+
+    fun getRepository() = MainRepository(getService())
 }
