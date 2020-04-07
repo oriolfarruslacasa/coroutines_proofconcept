@@ -14,32 +14,32 @@ class MainViewModel : ViewModel() {
         MainModule.getRepository()
     }
 
-    val data: LiveData<List<Country>> = liveData(Dispatchers.IO) {
+    val liveDataSequential: LiveData<List<Country>> = liveData(Dispatchers.IO) {
         val retrievedData = repository.listCountries()
-        val listOfLists = listOf(
+        val listOfLists = listOf( //These calls are made sequentially
             repository.getCountryByName(retrievedData.first().name ?: ""),
             repository.getCountryByName(retrievedData[1].name ?: ""),
-            repository.getCountryByName(retrievedData[2].name ?: ""),
-            repository.getCountryByName(retrievedData[3].name ?: ""),
-            repository.getCountryByName(retrievedData[4].name ?: "")
+            repository.getCountryByName(retrievedData[2].name ?: "")
         )
-        val finalList = listOfLists[0] + listOfLists[1]
+        val finalList = listOfLists[0] + listOfLists[1] + listOfLists[2]
         emit(finalList)
     }
 
-    val data2: MutableLiveData<List<Country>> = MutableLiveData()
+    val liveDataParallel_: MutableLiveData<List<Country>> = MutableLiveData()
+    val liveDataParallel: LiveData<List<Country>> = liveDataParallel_
 
     fun getVariousItems() {
         viewModelScope.launch(Dispatchers.Main) {
             val retrievedData = repository.listCountries()
-
-            val deferredOne = async { repository.getCountryByName(retrievedData.first().name ?: "") }
+            //These calls are made in parallel
+            val deferredOne =
+                async { repository.getCountryByName(retrievedData.first().name ?: "") }
             val deferredTwo = async { repository.getCountryByName(retrievedData[1].name ?: "") }
             val deferredThree = async { repository.getCountryByName(retrievedData[2].name ?: "") }
 
             val result = deferredOne.await() + deferredTwo.await() + deferredThree.await()
 
-            data2.value = result
+            liveDataParallel_.value = result
         }
     }
 }

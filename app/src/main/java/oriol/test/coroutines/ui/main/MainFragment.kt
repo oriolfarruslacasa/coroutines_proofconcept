@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import oriol.test.coroutines.R
+import oriol.test.coroutines.ui.main.model.Country
 
 class MainFragment : Fragment() {
 
-    lateinit var message: TextView
+    lateinit var layout: LinearLayout
 
     companion object {
         fun newInstance() = MainFragment()
@@ -30,35 +32,35 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        message = view!!.findViewById(R.id.message)
+        layout = view!!.findViewById(R.id.layout)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-//        showData()
-        showData2()
+//        showDataSequentialCalls()
+        showDataParallelCalls()
     }
 
-    private fun showData() {
-        viewModel.data.observe(viewLifecycleOwner, Observer {
-            var messageText = ""
-
-            it.forEach {
-                messageText += it.name + "\b"
-            }
-
-            message.text = messageText
+    private fun showDataSequentialCalls() {
+        viewModel.liveDataSequential.observe(viewLifecycleOwner, Observer {
+            printList(it)
         })
     }
 
-    private fun showData2() {
+    private fun showDataParallelCalls() {
         viewModel.getVariousItems()
-        viewModel.data2.observe(viewLifecycleOwner, Observer {
-            var messageText = ""
-
-            it.forEach {
-                messageText += it.name + "\b"
-            }
-
-            message.text = messageText
+        viewModel.liveDataParallel.observe(viewLifecycleOwner, Observer {
+            printList(it)
         })
+    }
+
+    private fun printList(list: List<Country>) {
+        list.forEach {
+            addText(it.name ?: "")
+        }
+    }
+
+    private fun addText(text: String) {
+        val textView = TextView(context)
+        textView.text = text
+        layout.addView(textView)
     }
 
 }
