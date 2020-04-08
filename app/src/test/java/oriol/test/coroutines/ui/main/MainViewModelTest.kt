@@ -7,6 +7,7 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
 import oriol.test.coroutines.ui.main.repositories.MainRepository
 
@@ -22,8 +23,13 @@ class MainViewModelTest {
 
     private lateinit var underTest : MainViewModel
 
+    @Mock
+    lateinit var repository: MainRepository
+
     @Before
     fun setUp() {
-        underTest = MainViewModel()
+        underTest = MainViewModel(repository, coroutinesTestRule.testDispatcherProvider)
     }
+
+    
 }

@@ -11,8 +11,8 @@ class MainViewModel(
     private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
-    private val liveDataParallel_: MutableLiveData<List<Country>> = MutableLiveData()
-    val liveDataParallel: LiveData<List<Country>> = liveDataParallel_
+    private val _liveDataParallel: MutableLiveData<List<Country>> = MutableLiveData()
+    val liveDataParallel: LiveData<List<Country>> = _liveDataParallel
 
     val liveDataSequential: LiveData<List<Country>> = liveData(dispatchers.io()) {
         val retrievedData = repository.listCountries()
@@ -36,7 +36,7 @@ class MainViewModel(
 
             val result = deferredOne.await() + deferredTwo.await() + deferredThree.await()
 
-            liveDataParallel_.value = result
+            _liveDataParallel.value = result
         }
     }
 }
