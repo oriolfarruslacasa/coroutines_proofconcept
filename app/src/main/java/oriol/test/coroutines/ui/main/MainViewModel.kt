@@ -1,23 +1,20 @@
 package oriol.test.coroutines.ui.main
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import oriol.test.coroutines.ui.main.model.Country
-import oriol.test.coroutines.ui.main.modules.MainModule
 import oriol.test.coroutines.ui.main.repositories.MainRepository
 
-class MainViewModel : ViewModel() {
-
-    private val repository: MainRepository by lazy {
-        MainModule.getRepository()
-    }
+class MainViewModel(
+    private val repository: MainRepository,
+    private val dispatchers: DispatcherProvider
+) : ViewModel() {
 
     private val liveDataParallel_: MutableLiveData<List<Country>> = MutableLiveData()
     val liveDataParallel: LiveData<List<Country>> = liveDataParallel_
 
-    val liveDataSequential: LiveData<List<Country>> = liveData(Dispatchers.IO) {
+    val liveDataSequential: LiveData<List<Country>> = liveData(dispatchers.io()) {
         val retrievedData = repository.listCountries()
         val listOfLists = listOf( //These calls are made sequentially
             repository.getCountryByName(retrievedData.first().name ?: ""),
@@ -29,7 +26,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getVariousItems() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(dispatchers.main()) {
             val retrievedData = repository.listCountries()
             //These calls are made in parallel
             val deferredOne =

@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         layout = view!!.findViewById(R.id.layout)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this, MainViewModelFactory()).get(MainViewModel::class.java)
 //        showDataSequentialCalls()
         showDataParallelCalls()
     }
