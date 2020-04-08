@@ -14,6 +14,9 @@ class MainViewModel : ViewModel() {
         MainModule.getRepository()
     }
 
+    private val liveDataParallel_: MutableLiveData<List<Country>> = MutableLiveData()
+    val liveDataParallel: LiveData<List<Country>> = liveDataParallel_
+
     val liveDataSequential: LiveData<List<Country>> = liveData(Dispatchers.IO) {
         val retrievedData = repository.listCountries()
         val listOfLists = listOf( //These calls are made sequentially
@@ -24,9 +27,6 @@ class MainViewModel : ViewModel() {
         val finalList = listOfLists[0] + listOfLists[1] + listOfLists[2]
         emit(finalList)
     }
-
-    val liveDataParallel_: MutableLiveData<List<Country>> = MutableLiveData()
-    val liveDataParallel: LiveData<List<Country>> = liveDataParallel_
 
     fun getVariousItems() {
         viewModelScope.launch(Dispatchers.Main) {

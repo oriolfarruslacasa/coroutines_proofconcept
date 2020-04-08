@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import oriol.test.coroutines.R
 import oriol.test.coroutines.ui.main.model.Country
 
@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         layout = view!!.findViewById(R.id.layout)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 //        showDataSequentialCalls()
         showDataParallelCalls()
     }
