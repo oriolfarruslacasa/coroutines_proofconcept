@@ -34,21 +34,32 @@ class MainFragment : Fragment() {
 
         layout = view!!.findViewById(R.id.layout)
         viewModel = ViewModelProvider(this, MainViewModelFactory()).get(MainViewModel::class.java)
-//        showDataSequentialCalls()
-        showDataParallelCalls()
+        showDataSequentialCalls()
+//        showDataParallelCalls()
     }
 
     private fun showDataSequentialCalls() {
         viewModel.liveDataSequential.observe(viewLifecycleOwner, Observer {
-            printList(it)
+            renderUiStatus(it)
         })
     }
 
     private fun showDataParallelCalls() {
         viewModel.getVariousItems()
         viewModel.liveDataParallel.observe(viewLifecycleOwner, Observer {
-            printList(it)
+            renderUiStatus(it)
         })
+    }
+
+    private fun renderUiStatus(it: MainUiStatus?) {
+        when (it) {
+            is MainUiStatus.SuccessStatus -> printList(it.list)
+            is MainUiStatus.ErrorStatus -> printError(it.message)
+        }
+    }
+
+    private fun printError(message: String) {
+        addText(message)
     }
 
     private fun printList(list: List<Country>) {
